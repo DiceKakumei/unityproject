@@ -55,6 +55,7 @@ public class Scenes : MonoBehaviour
             newSc.transform.parent = panel.transform;
             newSc.transform.position = new Vector3(530, 700 - i * 100, 0);
             newSc.transform.localScale = new Vector3(2, 2, 1);
+            if(i==0) ActiveSceneName = sceneName;
             newSc.GetComponent<Button>().onClick.AddListener(() => ChangeScene(sceneName));
             if (i > 0) newScene.SetActive(false);
             i++;
@@ -82,6 +83,7 @@ public class Scenes : MonoBehaviour
         }
         var.SetActive(true);
         ActiveSceneName = scenename;
+        Debug.Log("ActiveScene:"+ActiveSceneName);
 
     }
 

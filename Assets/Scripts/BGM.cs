@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
 using TMPro;
+using SFB;//ファイルのインポートに使う
 
 public class BGM : MonoBehaviour
 {
@@ -15,9 +16,10 @@ public class BGM : MonoBehaviour
     [SerializeField] Button CloseTab;
     private AudioSource audioSource;
     private List<string> bgmPaths = new List<string>();//読み込んだBGMのパスリスト
-    private string PATH;
     private int i = 0;
     private GameObject Canvas;
+    private string[] PATH;
+    //public AudioSource audioSource;
 
     void Start()
     {
@@ -33,12 +35,13 @@ public class BGM : MonoBehaviour
 
     public void LoadMusic()
     {
-        PATH = UnityEditor.EditorUtility.OpenFilePanel("Select Music File", "", "mp3,wav,ogg");
-        Debug.Log("FilePath = " + PATH);
-        if (PATH != null && PATH != "")
+        //PATH = UnityEditor.EditorUtility.OpenFilePanel("Select Music File", "", "mp3,wav,ogg");
+        var path = (StandaloneFileBrowser.OpenFilePanel("Select Music File", "", new[] { new ExtensionFilter("Audio Files", "mp3", "wav", "ogg") }, false));
+        if (path.Length > 0 && !string.IsNullOrEmpty(path[0]))
         {
-            bgmPaths.Add(PATH);
-            CreateMusicListItem(bgmPaths[i],i);
+            //bgmPaths[i] = path[0];
+            Debug.Log("FilePath = " + path[0]);
+            CreateMusicListItem(path[0], i);
             i++;
         }
     }

@@ -4,13 +4,13 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class roomchat : MonoBehaviour
+public class Chat : MonoBehaviour
 {
     [SerializeField] Button button;
     [SerializeField] Button CloseTab;
     [SerializeField] GameObject panel;
-    [SerializeField] Button TextPrefab;
-    [SerializeField] TMP_InputField Chat;
+    [SerializeField] Image TextPrefab;
+    [SerializeField] TMP_InputField chat;
     private GameObject Canvas;
     private int i = 0;
     //Button button;
@@ -20,15 +20,18 @@ public class roomchat : MonoBehaviour
         Canvas = GameObject.Find("Canvas");
         button.onClick.AddListener(() => panel.SetActive(true));
         CloseTab.onClick.AddListener(() => panel.SetActive(false));
-        Chat.onEndEdit.AddListener(delegate (string chatlog)
+        chat.onEndEdit.AddListener(delegate (string chatlog)
         {
-            Button newChat = Instantiate(TextPrefab);
+            Image newChat = Instantiate(TextPrefab);
+            //newChat.SetActive(true);
             newChat.name = chatlog;
             newChat.GetComponentInChildren<TextMeshProUGUI>().text = chatlog;
             newChat.transform.parent = Canvas.transform;
             newChat.transform.parent = panel.transform;
-            newChat.transform.position = new Vector3(1680, 900 - i * 60, 0);
-            newChat.transform.localScale = new Vector3(8, 2, 2);
+            //前のボックスサイズ+10分下に下げる
+            newChat.transform.position = new Vector3(1680, 800 - i * 110, 0);
+            //テキストの長さに合わせてサイズ変更する昨日
+            newChat.transform.localScale = new Vector3(4, 1, 1);
             i++;
         });
     }

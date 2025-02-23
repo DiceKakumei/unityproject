@@ -8,6 +8,7 @@ using System.Linq;
 public class Scenes : MonoBehaviour
 {
     [SerializeField] GameObject panel;
+    [SerializeField] GameObject SceneManager;
     [SerializeField] Button Scene;
     [SerializeField] Button AddScene;
     [SerializeField] Button DelScene;
@@ -49,6 +50,7 @@ public class Scenes : MonoBehaviour
             GameObject newScene = Instantiate(ScenePrefab);
             AllScenes.Add(newScene);
             newScene.name = SceneNameList[i];
+            newScene.transform.parent = SceneManager.transform;
             Button newSc = Instantiate(chooseScene);
             newSc.GetComponentInChildren<TextMeshProUGUI>().text = SceneNameList[i];
             newSc.transform.parent = Canvas.transform;

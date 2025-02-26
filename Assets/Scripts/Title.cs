@@ -8,7 +8,17 @@ using Steamworks;
 
 public class Title : MonoBehaviour
 {
+    //エラーログ
+    [SerializeField] private static TextMeshProUGUI Debuglog;
     [SerializeField] TMP_InputField m_joinLobbyID;
+    //[SerializeField] public TextMeshProUGUI Debuglog;
+    [SerializeField] GameObject obj;
+
+    void Awake()
+    {
+        Debuglog = obj.GetComponent<TextMeshProUGUI>();// シーン内の1つのTextMeshProUGUIを探す
+    }
+
     public void StartHost()
     {
         //接続承認コールバック
@@ -17,6 +27,7 @@ public class Title : MonoBehaviour
         SteamLobby.Instance.CreateLobby();
         //フルスクリーン解除
         Screen.fullScreen = false;
+
     }
 
     public void StartClient()
@@ -26,6 +37,7 @@ public class Title : MonoBehaviour
         Debug.Log(m_joinLobbyID.text);
         //フルスクリーン解除
         Screen.fullScreen = false;
+        //Debuglog.text = "入室に成功しました。";
     }
 
     private void ApprovalCheck(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
@@ -62,4 +74,9 @@ public class Title : MonoBehaviour
         response.Pending = false;
     }
 
+    public static void ChangeDebugLog(string log)
+    {
+        Debuglog.text = log;
+        return;
+    }
 }

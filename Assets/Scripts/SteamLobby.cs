@@ -2,7 +2,9 @@
 using Steamworks;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class SteamLobby : MonoBehaviour
 {
@@ -45,9 +47,12 @@ public class SteamLobby : MonoBehaviour
     {
         if (!SteamManager.Initialized)
         {
+            Title.ChangeDebugLog("Steam is not initialized");
             Debug.LogError("Steam is not initialized.");
             return;
         }
+
+        Title.ChangeDebugLog("Steam is initialized");
 
         SteamAPICall_t hCreateLobby = SteamMatchmaking.CreateLobby(
             ELobbyType.k_ELobbyTypePublic,//ロビーの公開・非公開 
@@ -61,10 +66,12 @@ public class SteamLobby : MonoBehaviour
         //ロビー作成成功していなかった場合
         if (pCallback.m_eResult != EResult.k_EResultOK || bIOFailure)
         {
+            Title.ChangeDebugLog("Faild to Create Lobby");
             Debug.Log("ロビーが作成されていません");
             return;
         }
 
+        Title.ChangeDebugLog("Succses to create Lobby");
         //ホストのアドレス（SteamID）を登録
         SteamMatchmaking.SetLobbyData(
             new CSteamID(pCallback.m_ulSteamIDLobby),
@@ -90,6 +97,7 @@ public class SteamLobby : MonoBehaviour
     /// </summary>
     public void JoinLobby(CSteamID lobbyID)
     {
+        Title.ChangeDebugLog("Client Start");
         Debug.Log("JoinLobby");
         SteamMatchmaking.JoinLobby(lobbyID);
     }
@@ -100,6 +108,7 @@ public class SteamLobby : MonoBehaviour
     /// <param name="callback"></param>
     private void OnGameLobbyJoinRequested(GameLobbyJoinRequested_t callback)
     {
+        Title.ChangeDebugLog("OnGameJoinLobbyRequested");
         Debug.Log("OnGameJoinLobbyRequested");
         SteamMatchmaking.JoinLobby(callback.m_steamIDLobby);
     }
@@ -110,10 +119,12 @@ public class SteamLobby : MonoBehaviour
     /// <param name="callback"></param>
     private void OnLobbyEntered(LobbyEnter_t callback)
     {
+        Title.ChangeDebugLog("OnLobbyEntered");
         Debug.Log("OnLobbyEntered");
         //入室失敗時
         if ((EChatRoomEnterResponse)callback.m_EChatRoomEnterResponse != EChatRoomEnterResponse.k_EChatRoomEnterResponseSuccess)
         {
+            Title.ChangeDebugLog("Faild to Get in Lobby");
             Debug.Log("入室に失敗しました");
             return;
         }
@@ -125,6 +136,7 @@ public class SteamLobby : MonoBehaviour
 
         if (string.IsNullOrEmpty(hostAddress))
         {
+            Title.ChangeDebugLog("Can not Get Host's Address");
             Debug.LogError("ホストのアドレスを取得出来ませんでした。");
             return;
         }
@@ -136,9 +148,11 @@ public class SteamLobby : MonoBehaviour
         //これじゃね?
         if (hostAddress == SteamUser.GetSteamID().ToString())
         {
+            Title.ChangeDebugLog("fuckyou");
             Debug.Log("fuckyou");
             return;
         }
+        Title.ChangeDebugLog("Sucsess to join Lobby");
 
         //ロビーID保存
         LobbyID = callback.m_ulSteamIDLobby;
@@ -151,10 +165,12 @@ public class SteamLobby : MonoBehaviour
 
         //ホストに接続
         bool result = NetworkManager.Singleton.StartClient();
+        Title.ChangeDebugLog("Is Sucsess to connect host"+result);
         Debug.Log("ホストに接続できたか:" + result);
         //切断時
-        NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnect;
+        if (hostAddress != SteamUser.GetSteamID().ToString()) NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnect;
 
+        Title.ChangeDebugLog($"Connect to SteamID{hostAddress}.");
         Debug.Log($"SteamID{hostAddress}の部屋に接続");
     }
 

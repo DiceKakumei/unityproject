@@ -1,40 +1,59 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Unity.Netcode;
+using UnityEngine.SceneManagement;
 
-public class Chat : MonoBehaviour
+public class Chat : NetworkBehaviour
 {
-    [SerializeField] Button button;
-    [SerializeField] Button CloseTab;
-    [SerializeField] GameObject panel;
-    [SerializeField] Image TextPrefab;
-    [SerializeField] TMP_InputField chat;
+    [SerializeField] private Button button;
+    [SerializeField] private Button CloseTab;
+    [SerializeField] private GameObject panel;
+    [SerializeField] private Image TextPrefab;
+    [SerializeField] private TMP_InputField chat;
     private GameObject Canvas;
+
+    private List<string> chatMessages = new List<string>();
     private int i = 0;
-    //Button button;
+
     void Start()
     {
         panel.SetActive(false);
         Canvas = GameObject.Find("Canvas");
         button.onClick.AddListener(() => panel.SetActive(true));
         CloseTab.onClick.AddListener(() => panel.SetActive(false));
+
         chat.onEndEdit.AddListener(delegate (string chatlog)
         {
-            Image newChat = Instantiate(TextPrefab);
-            //newChat.SetActive(true);
-            newChat.name = chatlog;
-            newChat.GetComponentInChildren<TextMeshProUGUI>().text = chatlog;
-            newChat.transform.parent = Canvas.transform;
-            newChat.transform.parent = panel.transform;
-            //前のボックスサイズ+10分下に下げる
-            newChat.transform.position = new Vector3(1680, 800 - i * 110, 0);
-            //テキストの長さに合わせてサイズ変更する昨日
-            newChat.transform.localScale = new Vector3(4, 1, 1);
-            i++;
+            if (IsServer)
+            {
+                // サーバーなら直接処理
+                AddChatMessageClientRpc(chatlog);
+            }
+            else
+            {
+                // クライアントならサーバーに送信
+                SendChatMessageServerRpc(chatlog);
+            }
         });
     }
 
+    [ServerRpc]
+    private void SendChatMessageServerRpc(string message, ServerRpcParams rpcParams = default)
+    {
+        AddChatMessageClientRpc(message);
+    }
 
+    [ClientRpc]
+    private void AddChatMessageClientRpc(string message)
+    {
+        Image newChat = Instantiate(TextPrefab);
+        newChat.name = message;
+        newChat.GetComponentInChildren<TextMeshProUGUI>().text = message;
+        newChat.transform.SetParent(panel.transform);
+        newChat.transform.localPosition = new Vector3(0, 800 - i * 110, 0);
+        newChat.transform.localScale = new Vector3(4, 1, 1);
+        i++;
+    }
 }

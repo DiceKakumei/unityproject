@@ -29,35 +29,36 @@ public class Library : MonoBehaviour
     void LoadFBXList()
     {
         //FBXを取得
-        GameObject[] models = Resources.LoadAll<GameObject>("ObjectLibrary");
+        GameObject[] models = Resources.LoadAll<GameObject>("ObjectFBX");
         //GameObject[] models = Resources.LoadAll<GameObject>("");
 
         foreach (var model in models)
         {
             string modelName = model.name;
-            string path = "ObjectLibrary/" + model.name;
+            string editorpath = "ObjectFBX/" + model.name;
+            string hostpath = "ObjectLibrary/" + model.name;
             Debug.Log($"Loading model:{modelName}");
-            Debug.Log($"Loading model Path:{path}");
+            Debug.Log($"Loading model Path:{editorpath}");
 
             //同じ名前のモデルが登録されていないかをチェック
             if (!loadedModels.ContainsKey(modelName))
             {
                 loadedModels.Add(modelName, model);
-                ModelPath.Add(path, model);
-                CreateButton(modelName,path);
+                ModelPath.Add(editorpath, model);
+                CreateButton(modelName,editorpath,hostpath);
             }
         }
     }
 
-    void CreateButton(string modelName,string path)
+    void CreateButton(string modelName,string editorpath,string hostpath)
     {
         Button newButton = Instantiate(ObjectPrefab);
         newButton.transform.parent = panel.transform;
         newButton.GetComponentInChildren<TextMeshProUGUI>().text = modelName;
-        newButton.onClick.AddListener(() => SpawnModel(modelName,path));
+        newButton.onClick.AddListener(() => SpawnModel(modelName,editorpath,hostpath));
     }
 
-    void SpawnModel(string modelName, string path)
+    void SpawnModel(string modelName, string editorpath,string hostpath)
     {
         Scenes scenes = GetComponent<Scenes>();
         if (loadedModels.TryGetValue(modelName,out GameObject modelPrefab))
@@ -67,7 +68,8 @@ public class Library : MonoBehaviour
             Debug.Log(scenes.ActiveSceneName);
             newInstance.transform.parent = GameObject.Find(scenes.ActiveSceneName).transform;
             newInstance.AddComponent<GetPath>();
-            newInstance.GetComponent<GetPath>().path = path;
+            newInstance.GetComponent<GetPath>().EditorPath = editorpath;
+            newInstance.GetComponent<GetPath>().HostPath = hostpath;
         }
     }
 }

@@ -33,21 +33,25 @@ public class Chat : NetworkBehaviour
             }
             else
             {
+                Debug.Log("Call as Client");
                 // クライアントならサーバーに送信
                 SendChatMessageServerRpc(chatlog);
             }
         });
     }
 
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
     private void SendChatMessageServerRpc(string message, ServerRpcParams rpcParams = default)
     {
+        Debug.Log("As Client Message:" + message);
         AddChatMessageClientRpc(message);
     }
 
+    //クライアント側からメッセージを送ってもらわないと分からん
     [ClientRpc]
     private void AddChatMessageClientRpc(string message)
     {
+        Debug.Log("As Server Message:" + message);
         Image newChat = Instantiate(TextPrefab);
         newChat.name = message;
         newChat.GetComponentInChildren<TextMeshProUGUI>().text = message;

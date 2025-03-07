@@ -28,12 +28,14 @@ public class SceneSaveManager : MonoBehaviour
             foreach (Transform obj in scene) // シーン内のオブジェクトを保存
             {
                 // Resources フォルダ内のパスを取得（例: "Models/MyModel"）
-                string resourcePath = obj.GetComponent<GetPath>().path;
+                string FbxPath = obj.GetComponent<GetPath>().EditorPath;
+                string hostpath = obj.GetComponent<GetPath>().HostPath;
 
                 ObjectData objData = new ObjectData
                 {
                     name = obj.name,
-                    fbxPath = resourcePath,
+                    fbxPath = FbxPath,
+                    hostPath = hostpath,
                     position = obj.position,
                     rotation = obj.rotation,
                     scale = obj.localScale
@@ -124,6 +126,7 @@ public class ObjectData
 {
     public string name;
     public string fbxPath; // Resources 内のパス (例: "Models/MyModel")
+    public string hostPath;//ホストがロードするときのパス
     public Vector3 position;
     public Quaternion rotation;
     public Vector3 scale;

@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class LobbyID : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI m_lobbyIdText;
+    [SerializeField] public TextMeshProUGUI m_lobbyIdText;
     [SerializeField] private Button button;
     
 

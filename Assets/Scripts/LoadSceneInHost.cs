@@ -40,23 +40,26 @@ public class LoadSceneInHost : NetworkBehaviour
         foreach (SceneData sceneData in sceneManagerData.scenes)
         {
             GameObject sceneObj = new GameObject(sceneData.sceneName);
-            sceneObj.transform.SetParent(sceneManager);
             sceneObj.AddComponent<NetworkObject>();
+
+            sceneObj.GetComponent<NetworkObject>().Spawn();
+            sceneObj.transform.SetParent(sceneManager);
 
             foreach (ObjectData objData in sceneData.objects)
             {
-                GameObject prefab = Resources.Load<GameObject>(objData.fbxPath);
+                NetworkObject prefab = Resources.Load<NetworkObject>(objData.hostPath);
                 if (prefab == null)
                 {
-                    Debug.LogError($"Failed to load prefab at {objData.fbxPath}");
+                    Debug.LogError($"Failed to load prefab at {objData.hostPath}");
                     return;
                 }
 
-                GameObject obj = Instantiate(prefab, objData.position, objData.rotation);
+                NetworkObject obj = Instantiate(prefab, objData.position, objData.rotation);
+                obj.Spawn();
                 obj.transform.SetParent(sceneObj.transform);
                 obj.transform.localScale = objData.scale;
                 obj.name = objData.name;
-                obj.AddComponent<NetworkObject>();
+                //obj.AddComponent<NetworkObject>();
             }
         }
 

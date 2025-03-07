@@ -4,5 +4,6 @@ using UnityEngine;
 
 public class GetPath : MonoBehaviour
 {
-    public string path;
+    public string EditorPath;
+    public string HostPath;
 }

@@ -16,6 +16,7 @@ public class NetworkBGM : NetworkBehaviour
     [SerializeField] GameObject ButtonPrefabPanel;
     [SerializeField] Button musicItemPrefab;
     [SerializeField] Button CloseTab;
+    [SerializeField] GameObject Camera;
 
     private AudioSource audioSource;
     private Dictionary<ulong, List<byte>> receivedChunks = new Dictionary<ulong, List<byte>>();
@@ -34,9 +35,15 @@ public class NetworkBGM : NetworkBehaviour
         ButtonPrefabPanel.SetActive(false);
         //sicItemPrefab.SetActive(false);
         audioSource = GetComponent<AudioSource>();
-        OpenUI.onClick.AddListener(() => AddBGMPanel.SetActive(true));
+        OpenUI.onClick.AddListener(() => {
+            Camera.GetComponent<SceneViewCamera>().CanMoveCam = true;
+            AddBGMPanel.SetActive(true);
+            });
         AddBGM.onClick.AddListener(LoadMusic);
-        CloseTab.onClick.AddListener(() => AddBGMPanel.SetActive(false));
+        CloseTab.onClick.AddListener(() => {
+            Camera.GetComponent<SceneViewCamera>().CanMoveCam = false;
+            AddBGMPanel.SetActive(false);
+            });
     }
 
     public void LoadMusic()
